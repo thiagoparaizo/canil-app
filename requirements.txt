@@ -1,0 +1,13 @@
+# Dev environment
+pip
+autopep8
+
+# App
+flask
+Flask-SQLAlchemy
+psycopg2-binary
+Flask-Migrate
+Flask-JWT-Extended
+dropbox
+redis
+celery

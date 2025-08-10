@@ -18,8 +18,8 @@ class Usuario(db.Model):
     permissoes = Column(JSONB) # Using JSONB for flexible permissions structure
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='usuarios_list')
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
+    #tenant = relationship("Tenant", backref='usuarios_list')
     logs_sistema = relationship('LogSistema', backref='usuario_obj', lazy=True) # One-to-Many with LogSistema
 
 
@@ -46,10 +46,10 @@ class Configuracao(db.Model):
     categoria = Column(String(64))
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='configuracoes_list')
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
+    #tenant = relationship("Tenant", backref='configuracoes_list')
 
-    def actualizar(self, valor):
+    def atualizar(self, valor):  # Fixed: renamed from 'actualizar' to 'atualizar'
         """Updates the configuration value."""
         self.valor = valor
 
@@ -67,10 +67,10 @@ class LogSistema(db.Model):
     ip = Column(String(45)) # IPv4 or IPv6 address
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='logs_sistema_list')
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
+    #tenant = relationship("Tenant", backref='logs_sistema_list')
 
-    def registrar_log(self, usuario_id: int | None, acao: str, tabela: str | None = None, dados_anteriores: dict | None = None, dados_novos: dict | None = None, ip: str | None = None):
+    def registrar_log(self, usuario_id: int = None, acao: str = None, tabela: str = None, dados_anteriores: dict = None, dados_novos: dict = None, ip: str = None):  # Fixed: added default values
         """Registers a system log entry."""
         # TODO: tenant_id needs to be obtained from the current request context or user
         new_log = LogSistema(
@@ -98,8 +98,8 @@ class Backup(db.Model):
     observacoes = Column(Text)
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='backups_list')
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
+    #tenant = relationship("Tenant", backref='backups_list')
 
     def executar(self):
         """Initiates a backup process."""
@@ -135,8 +135,8 @@ class Endereco(db.Model):
     canil = relationship('Canil', backref='endereco_obj', uselist=False)
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='enderecos_list')
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
+    #tenant = relationship("Tenant", backref='enderecos_list')
 
 
 class Canil(db.Model):
@@ -146,13 +146,13 @@ class Canil(db.Model):
     nome = Column(String(128), nullable=False)
     cnpj = Column(String(14), unique=True, nullable=True)
     registro_kennel = Column(String(128))
-    site = Column(String(128))\
+    site = Column(String(128))  # Fixed: removed backslash
     email = Column(String(128))
     telefone = Column(String(20))
     ativo = Column(Boolean, default=True)
 
     # Relationships
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)  # Fixed: removed 'public.'
     tenant = relationship("Tenant", backref='canis_list')
     # Relationship to Endereco (1:1)
     endereco_id = Column(Integer, ForeignKey('enderecos.id'), unique=True, nullable=True)

@@ -16,8 +16,9 @@ class Raca(db.Model):
     temperamento = Column(Text)
     origem_geografica = Column(String(128))
 
-    especie = relationship('Especie', backref='racas')
-    animais = relationship('Animal', backref='raca', lazy=True)
+    # Remover relacionamentos conflitantes
+    # especie = relationship('Especie', backref='racas')
+    # animais = relationship('Animal', backref='raca', lazy=True)
 
     def __repr__(self):
         return f"<Raca {self.nome}>"
@@ -30,7 +31,8 @@ class Especie(db.Model):
     nome_cientifico = Column(String(128))
     familia = Column(String(128))
 
-    racas = relationship('Raca', backref='especie_obj', lazy=True)
+    # Relacionamento simples sem backref
+    racas = relationship('Raca', lazy=True)
 
     def __repr__(self):
         return f"<Especie {self.nome}>"
@@ -43,11 +45,11 @@ class Linhagem(db.Model):
     raca_id = Column(Integer, ForeignKey('racas.id'), nullable=True)
     origem = Column(String(128))
     caracteristicas = Column(Text)
-    tipo = Column(String(64)) # e.g., "Trabalho", "Exposição"
-    # genealogy could be represented via relationships on the Animal model
+    tipo = Column(String(64))
 
-    raca = relationship('Raca', backref='linhagens')
-    animais = relationship('Animal', backref='linhagem', lazy=True)
+    # Relacionamento simples sem backref conflitante
+    # raca = relationship('Raca', backref='linhagens')
+    # animais = relationship('Animal', backref='linhagem', lazy=True)
 
     def __repr__(self):
         return f"<Linhagem {self.nome}>"

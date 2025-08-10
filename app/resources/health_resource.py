@@ -629,4 +629,121 @@ class VermifugacaoList(Resource):
 @health_ns.param('id', 'The deworming identifier')
 class VermifugacaoResource(Resource):
     # @jwt_required() # Add JWT protection
-    @health_ns.
+    @health_ns.doc('get_vermifugacao')
+    @health_ns.marshal_with(vermifugacao_model)
+    def get(self, id):
+        """Get a deworming by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            vermifugacao = Vermifugacao.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404(
+                 description=f"Deworming with ID {id} not found for this tenant"
+            )
+            return vermifugacao
+        except SQLAlchemyError as e:
+            current_app.logger.error(f"Database error fetching deworming {id}: {e}")
+            abort(500, message='Database error occurred.')
+        except Exception as e:
+            current_app.logger.error(f"An unexpected error occurred fetching deworming {id}: {e}")
+            abort(500, message='An error occurred while fetching the deworming.')
+
+    @health_ns.doc('update_vermifugacao')
+    @health_ns.expect(vermifugacao_model, validate=False)
+    @health_ns.marshal_with(vermifugacao_model)
+    def put(self, id):
+        """Update a deworming by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            vermifugacao = Vermifugacao.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            
+            update_data = health_ns.payload
+            if 'animal_id' in update_data:
+                abort(400, message='animal_id cannot be changed after creation.')
+            if 'tenant_id' in update_data:
+                abort(400, message='tenant_id cannot be changed.')
+
+            for key, value in update_data.items():
+                if hasattr(vermifugacao, key):
+                    setattr(vermifugacao, key, value)
+
+            db.session.commit()
+            return vermifugacao
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='An error occurred during updating deworming record.')
+
+    @health_ns.doc('delete_vermifugacao')
+    @health_ns.response(204, 'Deworming successfully deleted')
+    def delete(self, id):
+        """Delete a deworming by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            vermifugacao = Vermifugacao.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            db.session.delete(vermifugacao)
+            db.session.commit()
+            return '', 204
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='An error occurred during deleting deworming record.')
+
+
+# --- ExameGenetico Resources ---
+
+@health_ns.route('/exames_geneticos')
+class ExameGeneticoList(Resource):
+    @health_ns.doc('list_exames_geneticos')
+    @health_ns.marshal_list_with(exame_genetico_model)
+    def get(self):
+        """List all genetic exams for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            exames = ExameGenetico.query.filter_by(tenant_id=current_tenant_id).all()
+            return exames
+        except Exception as e:
+            abort(500, message='Database error occurred.')
+
+    @health_ns.doc('create_exame_genetico')
+    @health_ns.expect(exame_genetico_model)
+    @health_ns.marshal_with(exame_genetico_model, code=201)
+    def post(self):
+        """Create a new genetic exam for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            data = health_ns.payload
+            data['tenant_id'] = current_tenant_id
+            
+            new_exame = ExameGenetico(**data)
+            db.session.add(new_exame)
+            db.session.commit()
+            return new_exame, 201
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='An error occurred during creating genetic exam.')
+
+
+@health_ns.route('/exames_geneticos/<int:id>')
+@health_ns.param('id', 'The genetic exam identifier')
+class ExameGeneticoResource(Resource):
+    @health_ns.doc('get_exame_genetico')
+    @health_ns.marshal_with(exame_genetico_model)
+    def get(self, id):
+        """Get a genetic exam by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            exame = ExameGenetico.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            return exame
+        except Exception as e:
+            abort(500, message='Database error occurred.')
+
+    @health_ns.doc('delete_exame_genetico')
+    @health_ns.response(204, 'Genetic exam deleted')
+    def delete(self, id):
+        """Delete a genetic exam by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            exame = ExameGenetico.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            db.session.delete(exame)
+            db.session.commit()
+            return '', 204
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='Database error occurred.')

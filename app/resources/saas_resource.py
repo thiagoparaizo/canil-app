@@ -5,11 +5,18 @@ from sqlalchemy.exc import SQLAlchemyError, IntegrityError
 from app import db
 from app.models.saas import PlanoAssinatura, Assinatura, Pagamento
 from app.models.tenant import Tenant
-from app.services.payment_service import PaymentService
+# Remover: from app.services.payment_service import PaymentService
 from datetime import date
 
 # Assuming get_current_tenant is available from your middleware or authentication system
-from app.middleware.tenant_middleware import get_current_tenant # Adjust import based on actual location
+#from app.middleware.tenant_middleware import get_current_tenant # Adjust import based on actual location
+
+saas_ns = Namespace('saas', description='SaaS related operations (Plans, Subscriptions, Payments)')
+# Função temporária até implementar middleware correto
+def get_current_tenant():
+    class MockTenant:
+        id = 1
+    return MockTenant()
 
 # Define models for API representation
 plano_assinatura_model = saas_ns.model('PlanoAssinatura', {

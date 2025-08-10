@@ -22,13 +22,15 @@ class Ninhada(db.Model):
     qtd_vivos = Column(Integer)
     qtd_mortos = Column(Integer)
     observacoes = Column(Text)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
 
     # Relationships
-    filhotes = relationship('Filhote', backref='ninhada_obj', lazy=True)
+    filhotes = relationship('Filhote', backref='ninhada_obj', lazy=True, foreign_keys='Filhote.ninhada_id')
     cruzamento_id = Column(Integer, ForeignKey('cruzamentos.id'), nullable=False)
     cruzamento = relationship('Cruzamento', backref='ninhadas')
-    matriz_id = Column(Integer, ForeignKey('matrizes.id'), nullable=False) # Added relationship to Matriz
-    matriz = relationship('Matriz', backref='ninhadas_matriz')
+    matriz_id = Column(Integer, ForeignKey('animais.id'), nullable=False)
+    matriz = relationship('Animal', backref='ninhadas_matriz', foreign_keys=[matriz_id])
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
 
 
     def calcular_taxa_fertilidade(self) -> float:
@@ -61,6 +63,7 @@ class Cruzamento(db.Model):
     coeficiente_consanguinidade = Column(Float)
     observacoes = Column(Text)
     data_confirmacao = Column(Date, nullable=True)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
 
     # Relationships (Many-to-Many with Animal using association table)
     animais = relationship('Animal', secondary=cruzamento_animal_association, backref='cruzamentos')
@@ -98,6 +101,7 @@ class ArvoreGenealogica(db.Model):
     geracao = Column(Integer)
     tipo = Column(String(64))
     genealogia_data = Column(Text) # Consider JSON or a more structured approach later
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
 
     def gerar_arvore(self):
         """

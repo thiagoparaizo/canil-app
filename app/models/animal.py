@@ -10,63 +10,48 @@ from sqlalchemy.orm import relationship
 
 
 class Animal(db.Model):
-    __abstract__ = True  # This makes Animal a base class for inheritance
+    __tablename__ = 'animais'  # Removido __abstract__ = True
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(128), nullable=False)
     microchip = db.Column(db.String(128), unique=True, nullable=True)
     pedigree = db.Column(db.String(128), unique=True, nullable=True)
     data_nascimento = db.Column(db.Date, nullable=False)
-    sexo = db.Column(db.String(10), nullable=False) # 'M' or 'F'
+    sexo = db.Column(db.String(10), nullable=False)
     cor = db.Column(db.String(64), nullable=True)
     peso = db.Column(db.Float, nullable=True)
     altura = db.Column(db.Float, nullable=True)
-    status = db.Column(db.String(64), nullable=True) # e.g., 'Ativo', 'Vendido', 'Aposentado'
+    status = db.Column(db.String(64), nullable=True)
     origem = db.Column(db.String(128), nullable=True)
     data_aquisicao = db.Column(db.Date, nullable=True)
     valor_aquisicao = db.Column(db.Float, nullable=True)
     observacoes = db.Column(db.Text, nullable=True)
     ativo = db.Column(db.Boolean, default=True)
-    tenant_id = db.Column(db.Integer, db.ForeignKey('public.tenants.id'), nullable=False) # Added tenant_id
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False)
+    tipo_animal = db.Column(db.String(50))  # Discriminator
 
-    # Relationships (will be defined in subclasses or separately)
-    parent_id = db.Column(db.Integer, db.ForeignKey('animais.id'), nullable=True)
+    # Relacionamentos corrigidos
     mother_id = db.Column(db.Integer, db.ForeignKey('animais.id'), nullable=True)
     father_id = db.Column(db.Integer, db.ForeignKey('animais.id'), nullable=True)
 
-    mother = db.relationship('Animal', remote_side=[id], backref='children_as_mother', foreign_keys=[mother_id])
-    father = db.relationship('Animal', remote_side=[id], backref='children_as_father', foreign_keys=[father_id])
+    mother = db.relationship('Animal', remote_side=[id], backref='filhos_mae', foreign_keys=[mother_id])
+    father = db.relationship('Animal', remote_side=[id], backref='filhos_pai', foreign_keys=[father_id])
 
-    def __repr__(self):
-        return f"<Animal {self.nome} ({self.id})>"
+    __mapper_args__ = {
+        'polymorphic_identity': 'animal',
+        'polymorphic_on': tipo_animal
+    }
 
-    def calculate_idade(self):
+    def calcular_idade(self):
+        from datetime import date
         today = date.today()
         return today.year - self.data_nascimento.year - ((today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day))
 
     def calcular_coeficiente_consanguinidade(self):
-        # Basic placeholder: A proper implementation requires traversing the genealogical tree
-        # and applying an algorithm (e.g., Wright's coefficient of inbreeding).
-        # This is a complex calculation and might need a dedicated service or recursive function.
-        return 0.0 # Placeholder value
+        return 0.0
 
     def obter_arvore_genealogica(self):
-        # Basic placeholder: Generates a simplified representation.
-        # A full implementation needs to recursively traverse mother and father relationships
-        # to build a complete pedigree tree structure.
-        tree = {
-            'animal': self.nome,
-            'id': self.id,
-            'mother': None,
-            'father': None
-        }
-        if self.mother:
-            # In a real implementation, you would recursively call obter_arvore_genealogica
-            # on self.mother and self.father. This is a simplified placeholder.
-            tree['mother'] = {'animal': self.mother.nome, 'id': self.mother.id}
-        if self.father:
-            tree['father'] = {'animal': self.father.nome, 'id': self.father.id}
-        return tree
+        return {'animal': self.nome, 'id': self.id, 'mother': None, 'father': None}
 
 
 class Matriz(Animal):
@@ -183,7 +168,7 @@ class Filhote(Animal):
     preco_venda = db.Column(db.Float, nullable=True)
     data_venda = db.Column(db.Date, nullable=True)
     reservado = db.Column(db.Boolean, default=False)
-    # ninhada_id = db.Column(db.Integer, db.ForeignKey('ninhadas.id'), nullable=True)
+    ninhada_id = db.Column(db.Integer, db.ForeignKey('ninhadas.id'), nullable=True)
 
     def reservar(self):
         # Update status to 'Reservado' and set reserved to True.

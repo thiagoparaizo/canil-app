@@ -28,7 +28,7 @@ class Arquivo(db.Model):
 
     # Tenant ID for multi-tenancy
     tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='arquivos_list')
+    #tenant = relationship("Tenant", backref='arquivos_list')
 
 
     __mapper_args__ = {
@@ -142,7 +142,7 @@ class AlbumAnimal(db.Model):
 
     # Tenant ID for multi-tenancy
     tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
-    tenant = relationship("Tenant", backref='albuns_list')
+    #tenant = relationship("Tenant", backref='albuns_list')
 
 
     def criar(self):

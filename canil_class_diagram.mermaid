@@ -1,0 +1,326 @@
+classDiagram
+    %% Classes Principais de Animais
+    class Animal {
+        +int id
+        +string nome
+        +string microchip
+        +string pedigree
+        +date dataNascimento
+        +string sexo
+        +string cor
+        +float peso
+        +float altura
+        +string status
+        +string origem
+        +date dataAquisicao
+        +float valorAquisicao
+        +string observacoes
+        +bool ativo
+        +calcularIdade()
+        +calcularCoeficienteConsanguinidade()
+        +obterArvoreGenealogica()
+    }
+
+    class Matriz {
+        +int ciclosReproducao
+        +date ultimoCio
+        +date proximoCio
+        +string statusReprodutivo
+        +int qtdCruzamentos
+        +int qtdFilhotes
+        +bool aposentada
+        +date dataAposentadoria
+        +programarCruzamento()
+        +registrarCio()
+        +aposentar()
+    }
+
+    class Reprodutor {
+        +int qtdCruzamentos
+        +int qtdFilhotes
+        +string qualidadeEsperma
+        +date ultimaColeta
+        +bool ativo
+        +float taxaFertilidade
+        +programarCruzamento()
+        +avaliarFertilidade()
+    }
+
+    class Filhote {
+        +int ordemNascimento
+        +float pesoNascimento
+        +string statusVenda
+        +float precoVenda
+        +date dataVenda
+        +bool reservado
+        +reservar()
+        +vender()
+        +transferirParaAdulto()
+    }
+
+    %% Classes de Reprodução
+    class Ninhada {
+        +int numero
+        +date dataCruzamento
+        +date dataPrevisaoParto
+        +date dataParto
+        +int qtdFilhotes
+        +int qtdVivos
+        +int qtdMortos
+        +string observacoes
+        +calcularTaxaFertilidade()
+        +registrarParto()
+    }
+
+    class Cruzamento {
+        +int id
+        +date dataAcasalamento
+        +string tipo
+        +bool confirmado
+        +float coeficienteConsanguinidade
+        +string observacoes
+        +date dataConfirmacao
+        +confirmarPrenhez()
+        +calcularPrevisaoParto()
+        +validarCompatibilidade()
+    }
+
+    class ArvoreGenealogica {
+        +int geracao
+        +string tipo
+        +gerarArvore()
+        +calcularConsanguinidade()
+        +validarLinhagem()
+        +obterAncestralComum()
+    }
+
+    %% Classes de Identificação
+    class Raca {
+        +int id
+        +string nome
+        +string padrao
+        +string caracteristicas
+        +float pesoMedio
+        +float alturaMedia
+        +string temperamento
+        +string origemGeografica
+    }
+
+    class Especie {
+        +int id
+        +string nome
+        +string nomecientifico
+        +string familia
+    }
+
+    class Linhagem {
+        +int id
+        +string nome
+        +string origem
+        +string caracteristicas
+        +string tipo
+        +string genealogia
+    }
+
+    %% Classes de Saúde
+    class RegistroVeterinario {
+        +int id
+        +date dataConsulta
+        +string motivo
+        +string diagnostico
+        +string tratamento
+        +float peso
+        +string observacoes
+        +string statusSaude
+        +bool emergencia
+    }
+
+    class Vacinacao {
+        +int id
+        +string tipoVacina
+        +date dataAplicacao
+        +date proximaDose
+        +string lote
+        +string laboratorio
+        +bool reacao
+        +string observacoes
+    }
+
+    class Vermifugacao {
+        +int id
+        +string medicamento
+        +date dataAplicacao
+        +float dosagem
+        +date proximaAplicacao
+        +string observacoes
+    }
+
+    class ExameGenetico {
+        +int id
+        +string tipoExame
+        +date dataColeta
+        +date dataResultado
+        +string resultado
+        +string laboratorio
+        +string observacoes
+        +bool aprovado
+    }
+
+    %% Classes de Pessoas
+    class Cliente {
+        +int id
+        +string nome
+        +string cpf
+        +string telefone
+        +string email
+        +date dataNascimento
+        +string profissao
+        +bool ativo
+        +calcularIdade()
+        +validarDocumentos()
+    }
+
+    class Funcionario {
+        +int id
+        +string nome
+        +string cpf
+        +string cargo
+        +float salario
+        +date dataAdmissao
+        +string especialidade
+        +bool ativo
+    }
+
+    class Veterinario {
+        +string crmv
+        +string especialidade
+        +realizarConsulta()
+        +prescreverTratamento()
+        +emitirAtestado()
+    }
+
+    %% Classes de Transações
+    class Venda {
+        +int id
+        +date dataVenda
+        +float valor
+        +string formaPagamento
+        +string contratoVenda
+        +string garantias
+        +bool entregue
+        +string observacoes
+        +emitirContrato()
+        +registrarEntrega()
+    }
+
+    class Adocao {
+        +int id
+        +date dataAdocao
+        +string motivo
+        +string termoAdocao
+        +bool acompanhamento
+        +string observacoes
+        +emitirTermo()
+        +agendarVisita()
+    }
+
+    class Reserva {
+        +int id
+        +date dataReserva
+        +float valorSinal
+        +date dataVencimento
+        +string status
+        +string observacoes
+        +confirmar()
+        +cancelar()
+    }
+
+    %% Classes de Localização
+    class Endereco {
+        +string logradouro
+        +string numero
+        +string complemento
+        +string bairro
+        +string cidade
+        +string estado
+        +string cep
+        +string pais
+    }
+
+    class Canil {
+        +int id
+        +string nome
+        +string cnpj
+        +string registroKennel
+        +string site
+        +string email
+        +string telefone
+        +bool ativo
+        +gerarRelatorioFinanceiro()
+        +gerarRelatorioReprodutivo()
+        +gerarRelatorioSaude()
+    }
+
+    %% Classes de Controle
+    class Usuario {
+        +int id
+        +string login
+        +string senha
+        +string perfil
+        +date ultimoAcesso
+        +bool ativo
+        +autenticar()
+        +alterarSenha()
+    }
+
+    class Configuracao {
+        +string chave
+        +string valor
+        +string descricao
+        +string tipo
+        +atualizar()
+    }
+
+    %% Relacionamentos Principais
+    Animal ||--o{ Matriz : "pode ser"
+    Animal ||--o{ Reprodutor : "pode ser"
+    Animal ||--o{ Filhote : "pode ser"
+    Animal }o--|| Raca : "pertence a"
+    Animal }o--|| Especie : "pertence a"
+    Animal }o--o| Linhagem : "pertence a"
+    Animal ||--o{ RegistroVeterinario : "possui"
+    Animal ||--o{ Vacinacao : "possui"
+    Animal ||--o{ Vermifugacao : "possui"
+    Animal ||--o{ ExameGenetico : "possui"
+
+    %% Relacionamentos de Reprodução
+    Matriz ||--o{ Ninhada : "gera"
+    Reprodutor ||--o{ Ninhada : "gera"
+    Cruzamento ||--|| Ninhada : "resulta em"
+    Cruzamento }o--|| Matriz : "envolve"
+    Cruzamento }o--|| Reprodutor : "envolve"
+    Ninhada ||--o{ Filhote : "contém"
+    Animal ||--o{ ArvoreGenealogica : "possui"
+    ArvoreGenealogica }o--|| Animal : "pai"
+    ArvoreGenealogica }o--|| Animal : "mãe"
+
+    %% Relacionamentos de Transações
+    Animal ||--o{ Venda : "pode ter"
+    Animal ||--o{ Adocao : "pode ter"
+    Animal ||--o{ Reserva : "pode ter"
+    Cliente ||--o{ Venda : "realiza"
+    Cliente ||--o{ Adocao : "realiza"
+    Cliente ||--o{ Reserva : "realiza"
+
+    %% Relacionamentos de Pessoas e Localização
+    Cliente ||--|| Endereco : "possui"
+    Funcionario ||--|| Endereco : "possui"
+    Funcionario ||--o{ Veterinario : "pode ser"
+    Veterinario ||--o{ RegistroVeterinario : "realiza"
+    Canil ||--|| Endereco : "localizado em"
+    Canil ||--o{ Animal : "possui"
+    Canil ||--o{ Funcionario : "emprega"
+
+    %% Relacionamentos de Sistema
+    Usuario }o--o| Funcionario : "pode ser"
+    Usuario ||--o{ Configuracao : "gerencia"

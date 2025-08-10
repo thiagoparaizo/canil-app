@@ -9,13 +9,8 @@ from datetime import date, datetime
 # from app.models.health import RegistroVeterinario, Tratamento
 
 class Pessoa(db.Model):
-    __tablename__ = 'pessoas' # Added table name for the base class
-    __abstract__ = False # Changed to False for concrete inheritance strategy (or joined table)
-    __mapper_args__ = {
-        'polymorphic_identity': 'pessoa',
-        'polymorphic_on': 'tipo_pessoa'
-    }
-
+    __tablename__ = 'pessoas'
+    
     id = Column(Integer, primary_key=True)
     nome = Column(String(128), nullable=False)
     cpf = Column(String(11), unique=True, nullable=True)
@@ -24,14 +19,20 @@ class Pessoa(db.Model):
     data_nascimento = Column(Date, nullable=True)
     ativo = Column(Boolean, default=True)
     tipo_pessoa = Column(String(50))
-    tenant_id = db.Column(db.Integer, db.ForeignKey('public.tenants.id'), nullable=True) # Added tenant_id
+    tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False)
 
-    # Relationship to Endereco (One-to-One)
+    # Endereco relationship
     endereco_id = Column(Integer, ForeignKey('enderecos.id'), nullable=True)
-    endereco = relationship('Endereco', uselist=False) # uselist=False for One-to-One
+    endereco = relationship('Endereco', uselist=False)
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'pessoa',
+        'polymorphic_on': tipo_pessoa
+    }
 
     def calcular_idade(self):
         if self.data_nascimento:
+            from datetime import date
             today = date.today()
             return today.year - self.data_nascimento.year - ((today.month, today.day) < (self.data_nascimento.month, self.data_nascimento.day))
         return None
@@ -43,7 +44,7 @@ class Cliente(Pessoa):
     }
 
     id = Column(Integer, ForeignKey('pessoas.id'), primary_key=True)
-    profissao = Column(String(128))\n\n    # Relationships to Transactions (One-to-Many)\n    vendas = relationship('Venda', backref='cliente_obj', lazy=True)\n    adocoes = relationship('Adocao', backref='cliente_obj', lazy=True)\n    reservas = relationship('Reserva', backref='cliente_obj', lazy=True)
+    profissao = Column(String(128))  # Relationships to Transactions (One-to-Many)\n    vendas = relationship('Venda', backref='cliente_obj', lazy=True)\n    adocoes = relationship('Adocao', backref='cliente_obj', lazy=True)\n    reservas = relationship('Reserva', backref='cliente_obj', lazy=True)
 
     def validar_documentos(self):
         # TODO: Implement proper document validation logic (e.g., CPF format, existence checks)

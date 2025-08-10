@@ -123,19 +123,19 @@ class VendaResource(Resource):
         # TODO: Apply @tenant_required decorator
         try:
 
-        """Update a sale by its ID"""
-        venda = Venda.query.get_or_404(id)
-        data = transaction_ns.payload
+            """Update a sale by its ID"""
+            venda = Venda.query.get_or_404(id)
+            data = transaction_ns.payload
 
-        # Prevent updating foreign keys directly if not intended, or add logic to handle it
-        data.pop('cliente_id', None)
-        data.pop('filhote_id', None)
+            # Prevent updating foreign keys directly if not intended, or add logic to handle it
+            data.pop('cliente_id', None)
+            data.pop('filhote_id', None)
 
-        for key, value in data.items():
-            setattr(venda, key, value)
+            for key, value in data.items():
+                setattr(venda, key, value)
 
-        db.session.commit()
-        return venda # Needs tenant check before updating and returning
+            db.session.commit()
+            return venda # Needs tenant check before updating and returning
         except SQLAlchemyError as e: db.session.rollback(); abort(500, message=f'Database error: {e}')
         except Exception as e: db.session.rollback(); abort(500, message=f'An error occurred: {e}')
 
@@ -149,9 +149,11 @@ class VendaResource(Resource):
             # venda = Venda.query.filter_by(id=id, tenant_id=tenant_id).first() # Simulate tenant filtering
             venda = Venda.query.get(id) # Placeholder without tenant filtering
             if not venda: abort(404, message='Sale not found') # Needs tenant-specific not found
-        db.session.delete(venda)
-        db.session.commit()
-        return '', 204
+            db.session.delete(venda)
+            db.session.commit()
+            return '', 204
+        except SQLAlchemyError as e: db.session.rollback(); abort(500, message=f'Database error: {e}')
+        except Exception as e: db.session.rollback(); abort(500, message=f'An error occurred: {e}')
 
 # --- Adocao Resources ---
 
@@ -250,9 +252,12 @@ class AdocaoResource(Resource):
             if not adocao:
                 abort(404, message='Adoption record not found') # Needs tenant-specific not found
 
-        db.session.delete(adocao)
-        db.session.commit()
-        return '', 204
+            db.session.delete(adocao)
+            db.session.commit()
+            return '', 204 # 204 No Content on successful deletion
+        except SQLAlchemyError as e: abort(500, message=f'Database error: {e}')
+        except Exception as e: abort(500, message=f'An error occurred: {e}')
+        
 
 # --- Reserva Resources ---
 
@@ -358,6 +363,8 @@ class ReservaResource(Resource):
             if not reserva:
                 abort(404, message='Reservation not found') # Needs tenant-specific not found
 
-        db.session.delete(reserva)
-        db.session.commit()
-        return '', 204
+            db.session.delete(reserva)
+            db.session.commit()
+            return '', 204
+        except SQLAlchemyError as e: db.session.rollback(); abort(500, message=f'Database error: {e}')
+        except Exception as e: db.session.rollback(); abort(500, message=f'An error occurred: {e}')

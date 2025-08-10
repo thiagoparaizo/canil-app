@@ -612,4 +612,82 @@ class CruzamentoResource(Resource):
             current_tenant_id = get_current_tenant_id()
             # Filter by tenant_id
             cruzamento = Cruzamento.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404(
-                 description=f"Cruzamento with ID {id} not found for this tenant
+                 description=f"Cruzamento with ID {id} not found for this tenant"
+            )
+
+            db.session.delete(cruzamento)
+            db.session.commit()
+
+            return '', 204 # 204 No Content on successful deletion
+
+        except SQLAlchemyError as e:
+            db.session.rollback()
+            current_app.logger.error(f"Database error during cruzamento deletion {id}: {e}")
+            abort(500, message='Database error occurred.')
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"An unexpected error occurred during cruzamento deletion {id}: {e}")
+            abort(500, message='An error occurred during cruzamento deletion.')
+
+
+# --- ArvoreGenealogica Resources ---
+
+@breeding_ns.route('/arvores_genealogicas')
+class ArvoreGenealogicaList(Resource):
+    @breeding_ns.doc('list_arvores_genealogicas')
+    @breeding_ns.marshal_list_with(arvore_genealogica_model)
+    def get(self):
+        """List all genealogy trees for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            arvores = ArvoreGenealogica.query.filter_by(tenant_id=current_tenant_id).all()
+            return arvores
+        except Exception as e:
+            abort(500, message='Database error occurred.')
+
+    @breeding_ns.doc('create_arvore_genealogica')
+    @breeding_ns.expect(arvore_genealogica_model)
+    @breeding_ns.marshal_with(arvore_genealogica_model, code=201)
+    def post(self):
+        """Create a new genealogy tree for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            data = breeding_ns.payload
+            data['tenant_id'] = current_tenant_id
+            
+            new_arvore = ArvoreGenealogica(**data)
+            db.session.add(new_arvore)
+            db.session.commit()
+            return new_arvore, 201
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='An error occurred.')
+
+
+@breeding_ns.route('/arvores_genealogicas/<int:id>')
+@breeding_ns.param('id', 'The genealogy tree identifier')
+class ArvoreGenealogicaResource(Resource):
+    @breeding_ns.doc('get_arvore_genealogica')
+    @breeding_ns.marshal_with(arvore_genealogica_model)
+    def get(self, id):
+        """Get a genealogy tree by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            arvore = ArvoreGenealogica.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            return arvore
+        except Exception as e:
+            abort(500, message='Database error occurred.')
+
+    @breeding_ns.doc('delete_arvore_genealogica')
+    @breeding_ns.response(204, 'Genealogy tree deleted')
+    def delete(self, id):
+        """Delete a genealogy tree by its ID for the current tenant"""
+        try:
+            current_tenant_id = get_current_tenant_id()
+            arvore = ArvoreGenealogica.query.filter_by(id=id, tenant_id=current_tenant_id).first_or_404()
+            db.session.delete(arvore)
+            db.session.commit()
+            return '', 204
+        except Exception as e:
+            db.session.rollback()
+            abort(500, message='Database error occurred.')

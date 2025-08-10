@@ -16,6 +16,8 @@ class RegistroVeterinario(db.Model):
     observacoes = Column(Text)
     status_saude = Column(String(64))
     emergencia = Column(Boolean, default=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
+    #tenant = relationship("Tenant", backref='registros_veterinarios')
 
     animal = relationship('Animal', backref='registros_veterinarios_list')
 
@@ -33,7 +35,8 @@ class Vacinacao(db.Model):
     laboratorio = Column(String(128))
     reacao = Column(Boolean, default=False)
     observacoes = Column(Text)
-
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
+    #tenant = relationship("Tenant", backref='registros_veterinarios')
     animal = relationship('Animal', backref='vacinacoes_list')
 
     # No specific methods mentioned in prompt for Vacinacao beyond data fields
@@ -48,6 +51,8 @@ class Vermifugacao(db.Model):
     dosagem = Column(Float)
     proxima_aplicacao = Column(Date)
     observacoes = Column(Text)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
+    #tenant = relationship("Tenant", backref='registros_veterinarios')
 
     animal = relationship('Animal', backref='vermifugacoes_list')
 
@@ -65,6 +70,8 @@ class ExameGenetico(db.Model):
     laboratorio = Column(String(128))
     observacoes = Column(Text)
     aprovado = Column(Boolean, default=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
+    #tenant = relationship("Tenant", backref='registros_veterinarios')
 
     animal = relationship('Animal', backref='exames_geneticos_list')
 

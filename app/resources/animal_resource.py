@@ -117,7 +117,7 @@ class AnimalList(Resource):
 
             # Apply filters
             if filter_nome:
-                query = query.filter(Animal.nome.ilike(f'%{filter_nome}%\'))
+                query = query.filter(Animal.nome.ilike(f'%{filter_nome}%'))
             if filter_sexo:
                 query = query.filter_by(sexo=filter_sexo)
             if filter_status:
@@ -125,7 +125,7 @@ class AnimalList(Resource):
 
             # Apply search term across multiple fields
             if search_term:
-                 search_pattern = f'%{search_term}%\'
+                 search_pattern = f'%{search_term}%'
                  query = query.filter(or_(
                      Animal.nome.ilike(search_pattern),
                      Animal.microchip.ilike(search_pattern),
@@ -344,14 +344,14 @@ class AnimalResource(Resource):
 
             # Add fields specific to subclasses if present in payload and animal is of that type
             if isinstance(animal, Matriz):
-                 allowed_update_fields.extend([\'proximo_cio\', \'status_reprodutivo\', \'qtd_cruzamentos\',
-                                      \'qtd_filhotes\', \'aposentada\', \'data_aposentadoria\'])
+                 allowed_update_fields.extend(['proximo_cio', 'status_reprodutivo', 'qtd_cruzamentos',
+                                      'qtd_filhotes', 'aposentada', 'data_aposentadoria'])
             elif isinstance(animal, Reprodutor):
-                 allowed_update_fields.extend([\'qtd_cruzamentos\', \'qtd_filhotes\', \'qualidade_esperma\',
-                                       \'ultima_coleta\', \'ativo_reprodutivo\', \'taxa_fertilidade\'])
+                 allowed_update_fields.extend(['qtd_cruzamentos', 'qtd_filhotes', 'qualidade_esperma',
+                                       'ultima_coleta', 'ativo_reprodutivo', 'taxa_fertilidade'])
             elif isinstance(animal, Filhote):
-                 allowed_update_fields.extend([\'ordem_nascimento\', \'peso_nascimento\', \'status_venda\',
-                                      \'preco_venda\', \'data_venda\', \'reservado\'])
+                 allowed_update_fields.extend(['ordem_nascimento', 'peso_nascimento', 'status_venda',
+                                      'preco_venda', 'data_venda', 'reservado'])
 
             # Apply validations only to fields present in the update data and allowed for update
             for field, value in update_data.items():

@@ -38,7 +38,7 @@ class Animal(db.Model):
     father = db.relationship('Animal', remote_side=[id], backref='filhos_pai', foreign_keys=[father_id])
 
     __mapper_args__ = {
-        'polymorphic_identity': 'animal',
+        'polymorphic_identity': 'Animal',
         'polymorphic_on': tipo_animal
     }
 

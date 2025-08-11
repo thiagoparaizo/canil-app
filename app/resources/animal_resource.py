@@ -99,7 +99,7 @@ class AnimalList(Resource):
             
             # Importar modelos dinamicamente para evitar imports circulares
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -198,7 +198,7 @@ class AnimalList(Resource):
             
             # Importar modelo
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -258,7 +258,7 @@ class AnimalResource(Resource):
             
             # Importar modelo
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -294,7 +294,7 @@ class AnimalResource(Resource):
             
             # Importar modelo
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -374,7 +374,7 @@ class AnimalResource(Resource):
             
             # Importar modelo
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -428,7 +428,7 @@ class AnimalToggleStatus(Resource):
             current_tenant_id = get_current_tenant_id()
             
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             
@@ -466,7 +466,7 @@ class AnimalStats(Resource):
             current_tenant_id = get_current_tenant_id()
             
             try:
-                from app.models.animal import Animal
+                from app.models.animal import Animal, Matriz, Reprodutor, Filhote
             except ImportError:
                 animal_ns.abort(500, message='Modelo Animal não disponível')
             

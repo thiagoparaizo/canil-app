@@ -9,7 +9,8 @@ from .system import Usuario, Configuracao, LogSistema, Backup, Endereco, Canil
 
 # Importar apenas se não causar erro de relacionamento
 try:
-    from .animal import Animal, Matriz, Reprodutor, Filhote, Raca, Especie, Linhagem
+    from .animal import Animal, Matriz, Reprodutor, Filhote
+    from .identity import Raca, Especie, Linhagem
 except ImportError:
     pass
 

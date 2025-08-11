@@ -67,6 +67,10 @@ class Matriz(Animal):
 
     # Relationships
     # ninhadas = db.relationship('Ninhada', backref='matriz', lazy=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'Matriz',
+    }
 
 
     def __repr__(self):
@@ -120,6 +124,10 @@ class Reprodutor(Animal):
 
     # Relationships
     # cruzamentos = db.relationship('Cruzamento', backref='reprodutor', lazy=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'Reprodutor',
+    }
 
 
     def __repr__(self):
@@ -169,6 +177,10 @@ class Filhote(Animal):
     data_venda = db.Column(db.Date, nullable=True)
     reservado = db.Column(db.Boolean, default=False)
     ninhada_id = db.Column(db.Integer, db.ForeignKey('ninhadas.id'), nullable=True)
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'Filhote',
+    }
 
     def reservar(self):
         # Update status to 'Reservado' and set reserved to True.

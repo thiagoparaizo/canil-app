@@ -5,6 +5,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from app import db
 from app.models.system import Usuario
 from app.models.tenant import Tenant # Assuming Tenant model is needed to confirm tenant_id
+from sqlalchemy.exc import SQLAlchemyError
 
 
 auth_ns = Namespace('auth', description='Authentication operations')
@@ -77,7 +78,7 @@ class UserLogin(Resource):
 
             # Authentication successful, create JWT
             # Include user_id and tenant_id in the token payload
-            access_token = create_access_token(identity={'user_id': user.id, 'tenant_id': user.tenant_id})
+            access_token = create_access_token(identity=str(user.id))
 
             return {'access_token': access_token}, 200
 
@@ -144,7 +145,7 @@ class UserRegister(Resource):
             print(f"New user registered: {login} for tenant ID {tenant_id}")
 
             # Optional: Return a JWT token upon successful registration (auto-login)
-            access_token = create_access_token(identity={'user_id': new_user.id, 'tenant_id': new_user.tenant_id})
+            access_token = create_access_token(identity=str(new_user.id))
 
             return {'access_token': access_token}, 201
             # Or just return a success message:
@@ -168,7 +169,12 @@ class UserInfo(Resource):
         """
         Get information about the currently logged-in user.
         """
-        current_user_identity = get_jwt_identity()
-        # current_user_identity contains the dictionary payload we put in create_access_token
+        current_user_id = get_jwt_identity()
+        
+        # Buscar o usuário no banco de dados
+        user = db.session.query(Usuario).filter_by(id=int(current_user_id)).first()
+        
+        if not user:
+            auth_ns.abort(404, message='User not found')
 
-        return {'user_id': current_user_identity['user_id'], 'tenant_id': current_user_identity['tenant_id']}, 200
+        return {'user_id': user.id, 'tenant_id': user.tenant_id}, 200

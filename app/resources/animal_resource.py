@@ -16,9 +16,16 @@ from app import db
 def get_current_tenant_id():
     """Obtém o tenant_id do JWT token."""
     try:
-        identity = get_jwt_identity()
-        if isinstance(identity, dict):
-            return identity.get('tenant_id', 1)
+        user_id = get_jwt_identity()
+        if user_id:
+            # Buscar o usuário no banco para obter o tenant_id
+            from app.models.system import Usuario
+            user = db.session.query(Usuario).filter_by(id=int(user_id)).first()
+            if user:
+                return user.tenant_id
+        return 1  # Fallback para tenant padrão
+    except Exception as e:
+        print(f"Erro ao obter tenant_id: {e}")
         return 1  # Fallback para tenant padrão
     except:
         return 1

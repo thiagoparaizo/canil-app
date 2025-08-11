@@ -27,7 +27,7 @@ class Arquivo(db.Model):
     album = relationship('AlbumAnimal', backref='arquivos_list')
 
     # Tenant ID for multi-tenancy
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
     #tenant = relationship("Tenant", backref='arquivos_list')
 
 
@@ -141,7 +141,7 @@ class AlbumAnimal(db.Model):
     # arquivos = relationship('Arquivo', backref='album_obj') # Relationship is defined on the Arquivo side
 
     # Tenant ID for multi-tenancy
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
     #tenant = relationship("Tenant", backref='albuns_list')
 
 
@@ -175,7 +175,7 @@ class RegistroEvolucao(db.Model):
     fase = Column(String(64))
 
     # Tenant ID for multi-tenancy
-    tenant_id = Column(Integer, ForeignKey('public.tenants.id'), nullable=False)
+    tenant_id = Column(Integer, ForeignKey('tenants.id'), nullable=False)
     tenant = relationship("Tenant", backref='registros_evolucao_list')
 
     def registrar_marco(self, milestone: str):
